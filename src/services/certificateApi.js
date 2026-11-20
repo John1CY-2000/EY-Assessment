@@ -41,3 +41,28 @@ export async function submitCertificate(formData) {
 
   return data;
 }
+
+
+export async function getCertificateRequests(signal) {
+  if (!API_KEY) {
+    throw new Error("API key is missing.");
+  }
+
+  const url = new URL(`${API_BASE_URL}/request-list`);
+  url.searchParams.set("subscription-key", API_KEY);
+
+  const response = await fetch(url, { signal });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch requests: HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data)) {
+    throw new Error("Unexpected API response format.");
+  }
+
+  return data;
+}
+
