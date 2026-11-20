@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { submitCertificate } from "../services/certificateApi";
 
 const initialFormData = {
   address_to: "",
@@ -58,7 +59,9 @@ function validateForm(data) {
 function CertificateForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [touched, setTouched] = useState({});
-  const [validationPassed, setValidationPassed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState("");
+  const [submissionError, setSubmissionError] = useState("");
 
   const errors = validateForm(formData);
 
@@ -70,7 +73,8 @@ function CertificateForm() {
       [name]: value,
     }));
 
-    setValidationPassed(false);
+    setSubmissionMessage("");
+    setSubmissionError("");
   }
 
   function handleBlur(event) {
@@ -82,23 +86,43 @@ function CertificateForm() {
     }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  
+async function handleSubmit(event) {
+  event.preventDefault();
 
-    setTouched({
-      address_to: true,
-      purpose: true,
-      issued_on: true,
-      employee_id: true,
-    });
+  setTouched({
+    address_to: true,
+    purpose: true,
+    issued_on: true,
+    employee_id: true,
+  });
 
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
-
-    // TODO: Integrate with API to submit the form data
-    setValidationPassed(true);
+  if (Object.keys(errors).length > 0) {
+    return;
   }
+
+  setIsSubmitting(true);
+  setSubmissionMessage("");
+  setSubmissionError("");
+
+  try {
+    await submitCertificate(formData);
+
+    setSubmissionMessage(
+      "Your certificate request was submitted successfully!"
+    );
+
+    setFormData(initialFormData);
+    setTouched({});
+  } catch (error) {
+    setSubmissionError(
+      error.message || "Something went wrong. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
+
 
   function getError(field) {
     return touched[field] ? errors[field] : undefined;
@@ -198,15 +222,27 @@ function CertificateForm() {
           )}
         </div>
 
-        <button type="submit" className="submit-button">
-          Validate Request
+        
+        <button
+        type="submit"
+        className="submit-button"
+        disabled={isSubmitting}
+        >
+        {isSubmitting ? "Submitting..." : "Submit Request"}
         </button>
 
-        {validationPassed && (
-          <p className="success-message" role="status">
-            All fields are valid. Ready for API integration.
-          </p>
+        {submissionMessage && (
+        <p className="success-message" role="status">
+            {submissionMessage}
+        </p>
         )}
+
+        {submissionError && (
+        <p className="error-message" role="alert">
+            {submissionError}
+        </p>
+        )}
+
       </form>
     </section>
   );
