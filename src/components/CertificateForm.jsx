@@ -87,8 +87,12 @@ function CertificateForm() {
   }
 
   
+
 async function handleSubmit(event) {
   event.preventDefault();
+
+  setSubmissionMessage("");
+  setSubmissionError("");
 
   setTouched({
     address_to: true,
@@ -102,8 +106,6 @@ async function handleSubmit(event) {
   }
 
   setIsSubmitting(true);
-  setSubmissionMessage("");
-  setSubmissionError("");
 
   try {
     await submitCertificate(formData);
@@ -122,6 +124,7 @@ async function handleSubmit(event) {
     setIsSubmitting(false);
   }
 }
+
 
 
   function getError(field) {

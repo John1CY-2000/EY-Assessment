@@ -75,29 +75,33 @@ function RequestsTable() {
   }, []);
 
   const filteredRequests = requests.filter((request) => {
+    const referenceFilter = filters.reference_no.trim();
+    const addressFilter = filters.address_to.trim().toLowerCase();
+    const statusFilter = filters.status;
+
     const matchesReference =
-        !filters.reference_no ||
-        String(request.reference_no) === filters.reference_no.trim();
+        !referenceFilter ||
+        String(request.reference_no) === referenceFilter;
 
     const matchesAddress =
-        !filters.address_to ||
+        !addressFilter ||
         (request.address_to ?? "")
         .toLowerCase()
-        .includes(filters.address_to.trim().toLowerCase());
+        .includes(addressFilter);
 
     const matchesStatus =
-        !filters.status ||
-        request.status === filters.status;
+        !statusFilter ||
+        request.status === statusFilter;
 
     return matchesReference && matchesAddress && matchesStatus;
   });
 
-    const sortedRequests = [...filteredRequests].sort((a, b) => {
+  const sortedRequests = [...filteredRequests].sort((a, b) => {
     if (!sortConfig.field) {
         return 0;
     }
 
-    let comparison = 0;
+    let comparison = (a.status ?? "").localeCompare(b.status ?? "");
 
     if (sortConfig.field === "issued_on") {
         comparison =
@@ -110,7 +114,7 @@ function RequestsTable() {
     return sortConfig.direction === "asc"
         ? comparison
         : -comparison;
-    });
+  });
 
   return (
     <section>
@@ -229,22 +233,25 @@ function RequestsTable() {
             </thead>
 
             <tbody>
-              {sortedRequests.map((request, index) => (
-                <tr key={index}>
-                  <td>{request.reference_no ?? "—"}</td>
-                  <td>{request.address_to}</td>
-                  <td>{request.purpose}</td>
-                  <td>{request.issued_on}</td>
-                  <td>{request.status ?? "—"}</td>
-                </tr>
-              ))}
+                {sortedRequests.length === 0 ? (
+                    <tr>
+                    <td colSpan={5} className="empty-table-message">
+                        No requests match the selected filters.
+                    </td>
+                    </tr>
+                ) : (
+                    sortedRequests.map((request, index) => (
+                    <tr key={index}>
+                        <td>{request.reference_no ?? "—"}</td>
+                        <td>{request.address_to}</td>
+                        <td>{request.purpose}</td>
+                        <td>{request.issued_on}</td>
+                        <td>{request.status ?? "—"}</td>
+                    </tr>
+                    ))
+                )}
             </tbody>
           </table>
-          {requests.length > 0 && filteredRequests.length === 0 && (
-            <p role="status">
-                No requests match the selected filters.
-            </p>
-          )}
         </div>
       )}
     </section>

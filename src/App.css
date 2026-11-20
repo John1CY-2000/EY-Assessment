@@ -203,3 +203,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.empty-table-message {
+  text-align: center;
+  color: #64748b;
+  padding: 24px;
+}
