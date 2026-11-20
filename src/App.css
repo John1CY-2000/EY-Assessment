@@ -181,3 +181,25 @@
   outline: 2px solid #2563eb;
   outline-offset: 4px;
 }
+
+.table-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.form-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+}
+
+@media (max-width: 700px) {
+  .table-filters {
+    grid-template-columns: 1fr;
+  }
+}

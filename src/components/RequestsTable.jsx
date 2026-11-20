@@ -18,6 +18,20 @@ function RequestsTable() {
      direction: "asc",
   });
 
+  const [filters, setFilters] = useState({
+    reference_no: "",
+    address_to: "",
+    status: "",
+  });
+
+  const availableStatuses = [
+    ...new Set(
+        requests
+        .map((request) => request.status)
+        .filter(Boolean)
+    ),
+  ].sort();
+
   function handleSort(field) {
     setSortConfig((previous) => ({
         field,
@@ -25,6 +39,15 @@ function RequestsTable() {
         previous.field === field && previous.direction === "asc"
             ? "desc"
             : "asc",
+    }));
+  }
+
+  function handleFilterChange(event) {
+    const { name, value } = event.target;
+
+    setFilters((previous) => ({
+        ...previous,
+        [name]: value,
     }));
   }
 
@@ -51,7 +74,25 @@ function RequestsTable() {
     return () => controller.abort();
   }, []);
 
-    const sortedRequests = [...requests].sort((a, b) => {
+  const filteredRequests = requests.filter((request) => {
+    const matchesReference =
+        !filters.reference_no ||
+        String(request.reference_no) === filters.reference_no.trim();
+
+    const matchesAddress =
+        !filters.address_to ||
+        (request.address_to ?? "")
+        .toLowerCase()
+        .includes(filters.address_to.trim().toLowerCase());
+
+    const matchesStatus =
+        !filters.status ||
+        request.status === filters.status;
+
+    return matchesReference && matchesAddress && matchesStatus;
+  });
+
+    const sortedRequests = [...filteredRequests].sort((a, b) => {
     if (!sortConfig.field) {
         return 0;
     }
@@ -89,7 +130,52 @@ function RequestsTable() {
       )}
 
       {!isLoading && !error && requests.length > 0 && (
-        <div className="table-container">
+        <div className="table-container">   
+
+            <div className="table-filters">
+                <div className="form-field">
+                    <label htmlFor="filter-reference">Reference No.</label>
+                    <input
+                    id="filter-reference"
+                    type="text"
+                    name="reference_no"
+                    value={filters.reference_no}
+                    onChange={handleFilterChange}
+                    placeholder="Search reference..."
+                    />
+                </div>
+
+                <div className="form-field">
+                    <label htmlFor="filter-address">Address to</label>
+                    <input
+                    id="filter-address"
+                    type="text"
+                    name="address_to"
+                    value={filters.address_to}
+                    onChange={handleFilterChange}
+                    placeholder="Search address..."
+                    />
+                </div>
+
+                <div className="form-field">
+                    <label htmlFor="filter-status">Status</label>
+                    <select
+                        id="filter-status"
+                        name="status"
+                        value={filters.status}
+                        onChange={handleFilterChange}
+                        >
+                        <option value="">All statuses</option>
+
+                        {availableStatuses.map((status) => (
+                            <option key={status} value={status}>
+                            {status}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
           <table className="requests-table">
             <thead>
               <tr>
@@ -154,6 +240,11 @@ function RequestsTable() {
               ))}
             </tbody>
           </table>
+          {requests.length > 0 && filteredRequests.length === 0 && (
+            <p role="status">
+                No requests match the selected filters.
+            </p>
+          )}
         </div>
       )}
     </section>
