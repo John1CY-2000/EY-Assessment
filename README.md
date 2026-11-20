@@ -1,16 +1,76 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Zalex Employee Certification Application
 
-Currently, two official plugins are available:
+A React web application developed as part of the
+Junior React Front-End Developer assessment.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Technologies
 
-## React Compiler
+- React
+- JavaScript
+- Vite
+- CSS
+- REST APIs (Fetch API)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+### Request Certificate
+- Form with required field validation
+- Inline validation error messages
+- Certificate submission through the provided API
+- Loading and submission feedback
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Requests List
+- Retrieve certificate requests from the API
+- Display requests in a table
+- Sort by issue date and status
+- Filter by reference number, address and status
+- Handle loading, empty and error states
+
+## Setup
+
+### Prerequisites
+- Node.js and npm
+
+### Installation
+
+1. Install dependencies:
+
+   npm install
+
+2. Create a `.env.local` file in the project root.
+
+3. Add the API key provided for the assessment:
+
+   VITE_ZALEX_API_KEY=YOUR_API_KEY
+
+4. Start the application:
+
+   npm run dev
+
+5. Open:
+
+   http://localhost:3000
+
+## Additional Commands
+
+Production build:
+npm run build
+
+Lint:
+npm run lint
+
+## Notes
+
+- The application uses the updated API endpoint provided by EY.
+- The development server is configured to use localhost:3000.
+- API keys are not included in the repository.
+- Authentication and backend implementation are outside
+  the scope of this assessment.
+- The APIs are mocked, so successful submissions may not
+  appear in subsequent requests-list responses.
+- The Purpose field is implemented as a CSS-styled
+  plain-text textarea.
+- The API key is used client-side for this assessment;
+  in production, sensitive credentials should be protected
+  by a backend.
